@@ -24,17 +24,20 @@ builder.Services.AddDbContext<AtividadeDbContext>(
         options => options.UseSqlServer(builder.Configuration.GetConnectionString("DataBase")));
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Ativa o Swagger em qualquer ambiente (inclui produção como no Somee)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minha API v1");
+    c.RoutePrefix = "swagger"; // acessível em /swagger/index.html
+});
 
+// Habilita CORS para toda a aplicação
+app.UseCors("AllowAll"); // Aplica a política de CORS
+
+app.UseStaticFiles();
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
